@@ -21,6 +21,47 @@ namespace BlazorEcommerce.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("BlazorEcommerce.Shared.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Books",
+                            Url = "books"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Movies",
+                            Url = "movies"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Video Games",
+                            Url = "video-games"
+                        });
+                });
+
             modelBuilder.Entity("BlazorEcommerce.Shared.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -28,6 +69,9 @@ namespace BlazorEcommerce.Server.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -46,12 +90,15 @@ namespace BlazorEcommerce.Server.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Products");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
+                            CategoryId = 1,
                             Description = "Lo que el viento se llevó es un drama romántico o, según algunos críticos, un melodrama. La novela gira en torno a la historia de la joven Scarlett O'Hara, integrante de una familia aristócrata sureña, en tiempos de la Guerra de Secesión.",
                             ImagenUrl = "https://www.hislibris.com/wp-content/uploads/2007/06/Sense-t%C3%ADtol.jpg",
                             Price = 9.99m,
@@ -60,6 +107,7 @@ namespace BlazorEcommerce.Server.Migrations
                         new
                         {
                             Id = 2,
+                            CategoryId = 1,
                             Description = "La historia narra el día a día de dos ratones, Fisgón y Escurridizo, y dos liliputienses, Kif y Kof. Los cuatro protagonistas pasan sus días corriendo por los pasillos de un laberinto en busca de queso, alimento del que dependen para nutrirse y ser felices.",
                             ImagenUrl = "https://www.resumenlibro.com/img/libros/quien-se-ha-llevado-mi-queso.jpg",
                             Price = 7.99m,
@@ -68,11 +116,23 @@ namespace BlazorEcommerce.Server.Migrations
                         new
                         {
                             Id = 3,
+                            CategoryId = 1,
                             Description = "De aspecto pálido, alto, delgado, nariz puntiaguda, tiene Barba y bigote. Es el protagonista de la novela y constituye un consagrado mito de la literatura universal, y el más universal y profundo de la literatura española.",
                             ImagenUrl = "https://lalibretadenani.files.wordpress.com/2020/07/don-quijote.jpg",
                             Price = 6.99m,
                             Title = "Don Quijote de la Mancha"
                         });
+                });
+
+            modelBuilder.Entity("BlazorEcommerce.Shared.Product", b =>
+                {
+                    b.HasOne("BlazorEcommerce.Shared.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 #pragma warning restore 612, 618
         }
